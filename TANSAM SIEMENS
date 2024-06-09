@@ -1,0 +1,60 @@
+
+#include <DHT.h>
+
+#define DHTPIN1 2  // Digital pin connected to the first DHT sensor
+#define DHTTYPE1 DHT11   // DHT 11
+#define DHTPIN2 3  // Digital pin connected to the second DHT sensor
+#define DHTTYPE2 DHT22   // DHT 22
+
+#define LED_PIN 13 // Pin number of the built-in LED
+
+DHT dht1(DHTPIN1, DHTTYPE1);
+DHT dht2(DHTPIN2, DHTTYPE2);
+
+void setup() {
+  Serial.begin(9600);
+  dht1.begin();
+  dht2.begin();
+  pinMode(LED_PIN, OUTPUT); // Set the LED pin as an output
+}
+
+void loop() {
+  // Read temperature and humidity from sensor 1
+  float temp1 = dht1.readTemperature();
+  float hum1 = dht1.readHumidity();
+
+  // Read temperature and humidity from sensor 2
+  float temp2 = dht2.readTemperature();
+  float hum2 = dht2.readHumidity();
+
+  // Check if any readings failed
+  if (isnan(temp1) || isnan(hum1) || isnan(temp2) || isnan(hum2)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+  }
+
+  // Calculate difference in humidity
+  float hum_diff = abs(hum1 - hum2);
+
+  // Check if the difference exceeds 10%
+  if (hum_diff > 10) {
+    digitalWrite(LED_PIN, HIGH); // Turn on the LED
+    delay(500); // Wait for 0.5 seconds
+    digitalWrite(LED_PIN, LOW); // Turn off the LED
+    delay(500); // Wait for 0.5 seconds
+  }
+
+  // Calculate average temperature and humidity
+  float avg_temp = (temp1 + temp2) / 2.0;
+  float avg_hum = (hum1 + hum2) / 2.0;
+
+  // Display average temperature and humidity
+  Serial.print("Average Temperature: ");
+  Serial.print(avg_temp);
+  Serial.println(" °C");
+  Serial.print("Average Humidity: ");
+  Serial.print(avg_hum);
+  Serial.println(" %");
+
+  delay(2000); // Wait for 2 seconds before taking another reading
+}
