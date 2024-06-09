@@ -1,0 +1,25 @@
+// Define the pins
+const int pirSensorPin = 4;   // PIR sensor output pin
+const int buzzerPin = 5;      // Buzzer output pin
+
+void setup() {
+  Serial.begin(115200); // Initialize serial communication for debugging
+  pinMode(pirSensorPin, INPUT); // Set PIR sensor pin as input
+  pinMode(buzzerPin, OUTPUT);   // Set buzzer pin as output
+}
+
+void loop() {
+  int pirValue = digitalRead(pirSensorPin); // Read PIR sensor output
+
+  if (pirValue == HIGH) { // Motion detected
+    Serial.println("Motion detected!");
+    tone(buzzerPin, 1000); // Turn on the buzzer at 1000Hz
+    delay(1000);           // Buzzer on for 1 second
+    noTone(buzzerPin);     // Turn off the buzzer
+  } else {
+    Serial.println("No motion detected.");
+    noTone(buzzerPin);     // Ensure the buzzer is off
+  }
+
+  delay(100); // Delay between readings
+}
